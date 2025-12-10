@@ -1,7 +1,4 @@
-const axios = require("axios")
 const readline = require("readline")
-
-axios.defaults.validateStatus = () => true
 
 function ask(question) {
     return new Promise(res => {
@@ -21,14 +18,18 @@ async function remove() {
     let token = await ask("enter your token: ")
     if (!token) return console.log("enter an valid token")
 
-    let r = await axios.delete("https://discord.com/api/v10/hypesquad/online", {
+    let r = await fetch("https://discord.com/api/v10/hypesquad/online", {
+        method: "DELETE",
         headers: {
-            authorization: token
+            authorization: token,
         }
     })
 
     if (r.status === 204) return console.log("removed")
-    else return console.log("error occured", r.status, r.data)
+    else {
+        let text = await r.text().catch(() => null)
+        return console.log("error occured", r.status, text)
+    }
 }
 
 remove()
